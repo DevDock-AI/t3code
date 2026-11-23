@@ -527,11 +527,15 @@ const searchCaller = {
   providerSessionId: "mcp-tool-use-eval",
   providerInstanceId: "mcp-tool-use-eval",
 };
-const makeT3Exposure = () =>
-  McpToolExposure.make(
-    () => t3SearchCatalog,
+/** Searches only the tools the case lists, so every result has a schema to load. */
+const makeT3Exposure = (eligible: ReadonlyArray<ApiTool>) => {
+  const names = new Set(eligible.map((tool) => normalizeToolName(tool.name)));
+  const catalog = t3SearchCatalog.filter((tool) => names.has(tool.name));
+  return McpToolExposure.make(
+    () => catalog,
     () => Effect.void,
   );
+};
 // McpHttpServer decodes arguments with each tool's JSON codec, which drops undeclared keys.
 const t3InputDecoders = new Map(
   t3SourceTools.map((tool) => [
@@ -757,7 +761,7 @@ export const buildBase = (
 ) => {
   const visible = visibleT3Tools(options);
   const t3 = options.t3Deferred ? [...visible, advertisedTool(t3SearchSourceTool)] : visible;
-  const exposure = options.t3Deferred ? makeT3Exposure() : undefined;
+  const exposure = options.t3Deferred ? makeT3Exposure(t3) : undefined;
   const firstAssistant = template.messages.findIndex((message) => message.role === "assistant");
   const head = template.messages.slice(0, firstAssistant === -1 ? undefined : firstAssistant);
   const systemTexts = [
@@ -1100,7 +1104,9 @@ export const makeSample = (testCase: McpToolUseCase, base: Base): Sample => {
     testCase,
     base,
     tools: [...base.nativeTools],
-    ...(testCase.setup.toolExposure === "t3_tool_search" ? { t3Exposure: makeT3Exposure() } : {}),
+    ...(testCase.setup.toolExposure === "t3_tool_search"
+      ? { t3Exposure: makeT3Exposure(base.t3) }
+      : {}),
     repo: testCase.setup.world?.repo ?? "acme/app",
     shell,
     shellUsage: emptyUsage(),

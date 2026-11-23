@@ -107,11 +107,11 @@ export const make = (
           .slice(0, MAX_RESULTS)
           .map((match) => match.tool),
       ];
+      if (awaitingRelist.has(providerSessionId) && !relisters.has(providerSessionId)) {
+        // The harness ignored list_changed, so its model cannot see what the search loads.
+        yield* Effect.logWarning("mcp.tool-search.not-relisted", caller);
+      }
       if (found.length > 0) {
-        if (awaitingRelist.has(providerSessionId) && !relisters.has(providerSessionId)) {
-          // The harness ignored list_changed, so its model cannot see what the search loads.
-          yield* Effect.logWarning("mcp.tool-search.not-relisted", caller);
-        }
         load(
           providerSessionId,
           found.map((tool) => tool.name),
