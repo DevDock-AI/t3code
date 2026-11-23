@@ -762,6 +762,10 @@ export const buildBase = (
   const visible = visibleT3Tools(options);
   const t3 = options.t3Deferred ? [...visible, advertisedTool(t3SearchSourceTool)] : visible;
   const exposure = options.t3Deferred ? makeT3Exposure(t3) : undefined;
+  if (exposure && (options.agentFeedback ?? "off") !== "off") {
+    // This mode sends ACP instructions, which carry no feedback guidance.
+    throw new Error("toolExposure t3_tool_search does not model agentFeedback.");
+  }
   const firstAssistant = template.messages.findIndex((message) => message.role === "assistant");
   const head = template.messages.slice(0, firstAssistant === -1 ? undefined : firstAssistant);
   const systemTexts = [

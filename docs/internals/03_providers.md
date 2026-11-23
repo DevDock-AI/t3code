@@ -59,6 +59,23 @@ clients read declared capabilities, never provider names.
   [`mcp-relist-probe.ts`](../../apps/server/scripts/mcp-relist-probe.ts); a harness that fails is
   left with four tools.
 
+  What each harness did when last checked (2026-11-23). Re-run the probe rather than trust a row.
+
+  | Harness      | Lists again after `list_changed`                                                     | Today                     | Known from         |
+  | ------------ | ------------------------------------------------------------------------------------ | ------------------------- | ------------------ |
+  | Claude Code  | Yes, same turn                                                                       | Its own ToolSearch        | Probe              |
+  | Codex        | Only with `features.mcp_tool_list_changed`                                           | Its own tool search       | Probe              |
+  | Copilot CLI  | Yes, same turn                                                                       | T3's `tool_search`        | Probe (#34245)     |
+  | Pi           | No: T3's extension lists once                                                        | Pi's own `tool_search`    | Source             |
+  | OpenCode     | Yes, same turn; the next step can race it                                            | Full list                 | Source, not probed |
+  | Antigravity  | Yes; same turn unknown                                                               | Full list                 | Binary symbols     |
+  | Kiro         | Unknown; its open-source ancestor did                                                | Full list                 | Strings            |
+  | Grok         | Unknown                                                                              | Full list                 | Strings            |
+  | fx           | Not from a POST response; yes over stdio                                             | Full list                 | Source             |
+  | Cursor       | No: tools are read once per run                                                      | Full list                 | Bundle             |
+  | Muse Code    | Unknown                                                                              | Full list                 | Strings            |
+  | ACP Registry | Gemini CLI, Goose, Kilo, fast-agent, Kimchi do; Qwen Code, Kimi, Mistral Vibe do not | Full list, except Copilot | Source             |
+
 ## Model manifest
 
 The bundled [`model-manifest.json`](../../apps/server/src/provider/model-manifest.json) enables
