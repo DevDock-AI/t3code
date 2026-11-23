@@ -50,6 +50,14 @@ clients read declared capabilities, never provider names.
   bypass a provider's sandbox or approval rules.
 - **T3 MCP tools.** Inject the thread's authenticated MCP server so agents can reach T3 tools, and
   keep turns working if that server is unreachable.
+- **Listing tools on demand needs a harness that lists again.** T3 can list only a few tools and
+  reveal the rest through `tool_search` (`deferMcpTools`). That works only when the harness calls
+  `tools/list` again after `notifications/tools/list_changed`, which arrives in the SSE body of the
+  `tool_search` response, and gives its model the new tools in the same turn. Many harnesses do not:
+  Cursor reads tools once per run, and Codex ignores the notification unless a feature flag is on.
+  The full list is therefore the default. Turn deferral on for a harness only after it passes
+  [`mcp-relist-probe.ts`](../../apps/server/scripts/mcp-relist-probe.ts); a harness that fails is
+  left with four tools.
 
 ## Model manifest
 
