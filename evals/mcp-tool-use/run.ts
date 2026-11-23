@@ -3463,7 +3463,6 @@ const main = Effect.gen(function* () {
     const [role = "top", device, browser, links, forge, feedback, t3Deferred] = key.split(":") as [
       McpToolUseCase["setup"]["role"],
       string,
-      McpToolUseCase["setup"]["role"],
       string,
       string,
       string,

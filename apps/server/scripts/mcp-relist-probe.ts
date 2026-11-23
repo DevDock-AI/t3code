@@ -87,7 +87,7 @@ const served = McpHttpServer.layerMcpTransport(
 
 const command = Command.make(
   "mcp-relist-probe",
-  { port: Flag.integer("port").pipe(Flag.withDefault(8787)) },
+  { port: Flag.Int("port").pipe(Flag.withDefault(8787)) },
   ({ port }) =>
     Console.log(`MCP endpoint: http://127.0.0.1:${port}/mcp
 Headers: "Authorization: Bearer ${token}" and "t3-tool-exposure: deferred"
